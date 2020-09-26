@@ -67,7 +67,7 @@ class RedisSessionStore extends EventEmitter {
 
         if (ttl !== null && ttl !== undefined) {
           // Bump the ttl
-          console.log('BUMP EXPIRY');
+          console.log('BUMP EXPIRY', ttl);
           this[sRavelInstance].$kvstore.expire(sid, ttl, finishBasicPromise(resolve, reject));
         }
 
@@ -85,7 +85,7 @@ class RedisSessionStore extends EventEmitter {
   set(sid, sess, ttl, opts = {
     changed: true
   }) {
-    console.log('SET', opts);
+    console.log('SET', opts, ttl);
     return new Promise((resolve, reject) => {
       if (typeof ttl === 'number') {
         ttl = Math.ceil(ttl / 1000);
@@ -100,6 +100,7 @@ class RedisSessionStore extends EventEmitter {
         if (ttl !== undefined) {
           if (opts.rolling) {
             hashObject[TTL_KEY] = ttl;
+            console.log('BUMP ON SET', ttl);
           }
 
           this[sRavelInstance].$kvstore.hmset(sid, hashObject, finishBasicPromise(resolve, reject));
