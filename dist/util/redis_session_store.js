@@ -54,6 +54,7 @@ class RedisSessionStore extends EventEmitter {
   }
 
   get(sid) {
+    console.log('GET session');
     return new Promise((resolve, reject) => {
       this[sRavelInstance].$kvstore.hmget(sid, [SESSION_KEY, TTL_KEY], (err, res) => {
         let sess = null;
@@ -66,6 +67,7 @@ class RedisSessionStore extends EventEmitter {
 
         if (ttl !== null && ttl !== undefined) {
           // Bump the ttl
+          console.log('BUMP EXPIRY');
           this[sRavelInstance].$kvstore.expire(sid, ttl, finishBasicPromise(resolve, reject));
         }
 
@@ -83,7 +85,7 @@ class RedisSessionStore extends EventEmitter {
   set(sid, sess, ttl, opts = {
     changed: true
   }) {
-    console.log(opts);
+    console.log('SET', opts);
     return new Promise((resolve, reject) => {
       if (typeof ttl === 'number') {
         ttl = Math.ceil(ttl / 1000);
@@ -115,6 +117,7 @@ class RedisSessionStore extends EventEmitter {
   }
 
   destroy(sid) {
+    console.log('DESTROY SESSION');
     return new Promise((resolve, reject) => {
       this[sRavelInstance].$kvstore.del(sid, finishBasicPromise(resolve, reject));
     });
