@@ -54,8 +54,11 @@ class RedisSessionStore extends EventEmitter {
   }
 
   get(sid) {
-    console.log('GET session');
+    console.log('GET session', sid);
     return new Promise((resolve, reject) => {
+      this[sRavelInstance].$kvstore.ttl(sid, (err, res) => {
+        console.log(err || res);
+      });
       this[sRavelInstance].$kvstore.hmget(sid, [SESSION_KEY, TTL_KEY], (err, res) => {
         let sess = null;
         let ttl = null;
@@ -85,7 +88,7 @@ class RedisSessionStore extends EventEmitter {
   set(sid, sess, ttl, opts = {
     changed: true
   }) {
-    console.log('SET', opts, ttl);
+    console.log('SET', opts, ttl, sid);
     return new Promise((resolve, reject) => {
       if (typeof ttl === 'number') {
         ttl = Math.ceil(ttl / 1000);
